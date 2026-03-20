@@ -79,13 +79,13 @@ export const Settings = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Column: Shop Settings */}
         <div className="lg:col-span-7">
-          <div className="bg-[#151921] rounded-[32px] p-8 border border-slate-800/50 shadow-xl">
+          <div className="bg-white dark:bg-[#151921] rounded-[32px] p-8 border border-slate-200 dark:border-slate-800/50 shadow-xl">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-indigo-600/10 rounded-2xl flex items-center justify-center text-indigo-500">
                   <Store className="w-6 h-6" />
                 </div>
-                <h3 className="text-2xl font-bold text-white">{t('shopSettings')}</h3>
+                <h3 className="text-2xl font-bold dark:text-white text-slate-900">{t('shopSettings')}</h3>
               </div>
               <button 
                 onClick={handleSaveSettings}
@@ -102,7 +102,7 @@ export const Settings = () => {
               <div>
                 <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 ml-1">{t('upload')} Logo</label>
                 <div className="flex items-center gap-6">
-                  <div className="relative w-32 h-32 border-2 border-dashed border-slate-800 rounded-[24px] flex flex-col items-center justify-center text-slate-600 bg-[#0B0E14]/50 group hover:border-indigo-500/50 transition-colors cursor-pointer overflow-hidden">
+                  <div className="relative w-32 h-32 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[24px] flex flex-col items-center justify-center text-slate-600 bg-slate-50 dark:bg-[#0B0E14]/50 group hover:border-indigo-500/50 transition-colors cursor-pointer overflow-hidden">
                     {logo ? (
                       <img src={logo} alt="Shop Logo" className="w-full h-full object-cover" />
                     ) : (
@@ -129,7 +129,7 @@ export const Settings = () => {
                   type="text" 
                   value={shopName}
                   onChange={(e) => setShopName(e.target.value)}
-                  className="w-full bg-[#0B0E14] border border-slate-800/50 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium"
+                  className="w-full bg-slate-50 dark:bg-[#0B0E14] border border-slate-200 dark:border-slate-800/50 rounded-2xl px-6 py-4 dark:text-white text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium"
                 />
               </div>
 
@@ -139,7 +139,7 @@ export const Settings = () => {
                 <textarea 
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  className="w-full bg-[#0B0E14] border border-slate-800/50 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium h-32 resize-none"
+                  className="w-full bg-slate-50 dark:bg-[#0B0E14] border border-slate-200 dark:border-slate-800/50 rounded-2xl px-6 py-4 dark:text-white text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium h-32 resize-none"
                 />
               </div>
 
@@ -151,7 +151,7 @@ export const Settings = () => {
                     type="text" 
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full bg-[#0B0E14] border border-slate-800/50 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium"
+                    className="w-full bg-slate-50 dark:bg-[#0B0E14] border border-slate-200 dark:border-slate-800/50 rounded-2xl px-6 py-4 dark:text-white text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium"
                   />
                 </div>
                 <div>
@@ -160,7 +160,7 @@ export const Settings = () => {
                     type="email" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-[#0B0E14] border border-slate-800/50 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium"
+                    className="w-full bg-slate-50 dark:bg-[#0B0E14] border border-slate-200 dark:border-slate-800/50 rounded-2xl px-6 py-4 dark:text-white text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium"
                   />
                 </div>
               </div>
@@ -171,12 +171,12 @@ export const Settings = () => {
         {/* Right Column: Preferences */}
         <div className="lg:col-span-5 space-y-8">
           {/* Language */}
-          <div className="bg-[#151921] rounded-[32px] p-8 border border-slate-800/50 shadow-xl">
+          <div className="bg-white dark:bg-[#151921] rounded-[32px] p-8 border border-slate-200 dark:border-slate-800/50 shadow-xl">
             <div className="flex items-center gap-4 mb-8">
               <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500">
                 <Globe className="w-6 h-6" />
               </div>
-              <h3 className="text-2xl font-bold text-white">{t('language')}</h3>
+              <h3 className="text-2xl font-bold dark:text-white text-slate-900">{t('language')}</h3>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -185,7 +185,7 @@ export const Settings = () => {
                 className={`flex items-center justify-center gap-3 py-4 rounded-2xl transition-all font-bold border-2 ${
                   language === 'en' 
                     ? 'bg-indigo-600/10 border-indigo-600 text-indigo-500' 
-                    : 'bg-[#0B0E14] border-transparent text-slate-500 hover:bg-[#1D222B]'
+                    : 'bg-slate-50 dark:bg-[#0B0E14] border-transparent text-slate-500 hover:bg-slate-100 dark:hover:bg-[#1D222B]'
                 }`}
               >
                 English
@@ -195,7 +195,7 @@ export const Settings = () => {
                 className={`flex items-center justify-center gap-3 py-4 rounded-2xl transition-all font-bold border-2 ${
                   language === 'my' 
                     ? 'bg-indigo-600/10 border-indigo-600 text-indigo-500' 
-                    : 'bg-[#0B0E14] border-transparent text-slate-500 hover:bg-[#1D222B]'
+                    : 'bg-slate-50 dark:bg-[#0B0E14] border-transparent text-slate-500 hover:bg-slate-100 dark:hover:bg-[#1D222B]'
                 }`}
               >
                 မြန်မာ (Burmese)
@@ -204,12 +204,12 @@ export const Settings = () => {
           </div>
 
           {/* Theme */}
-          <div className="bg-[#151921] rounded-[32px] p-8 border border-slate-800/50 shadow-xl">
+          <div className="bg-white dark:bg-[#151921] rounded-[32px] p-8 border border-slate-200 dark:border-slate-800/50 shadow-xl">
             <div className="flex items-center gap-4 mb-8">
               <div className="w-12 h-12 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-500">
                 {theme === 'dark' ? <Moon className="w-6 h-6" /> : <Sun className="w-6 h-6" />}
               </div>
-              <h3 className="text-2xl font-bold text-white">{t('theme')}</h3>
+              <h3 className="text-2xl font-bold dark:text-white text-slate-900">{t('theme')}</h3>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -218,7 +218,7 @@ export const Settings = () => {
                 className={`flex items-center justify-center gap-3 py-4 rounded-2xl transition-all font-bold border-2 ${
                   theme === 'light' 
                     ? 'bg-indigo-600/10 border-indigo-600 text-indigo-500' 
-                    : 'bg-[#0B0E14] border-transparent text-slate-500 hover:bg-[#1D222B]'
+                    : 'bg-slate-50 dark:bg-[#0B0E14] border-transparent text-slate-500 hover:bg-slate-100 dark:hover:bg-[#1D222B]'
                 }`}
               >
                 <Sun className="w-5 h-5" />
@@ -229,7 +229,7 @@ export const Settings = () => {
                 className={`flex items-center justify-center gap-3 py-4 rounded-2xl transition-all font-bold border-2 ${
                   theme === 'dark' 
                     ? 'bg-indigo-600/10 border-indigo-600 text-indigo-500' 
-                    : 'bg-[#0B0E14] border-transparent text-slate-500 hover:bg-[#1D222B]'
+                    : 'bg-slate-50 dark:bg-[#0B0E14] border-transparent text-slate-500 hover:bg-slate-100 dark:hover:bg-[#1D222B]'
                 }`}
               >
                 <Moon className="w-5 h-5" />

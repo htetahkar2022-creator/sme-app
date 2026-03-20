@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { InventoryItem, CartItem } from '../types';
-import { ShoppingCart, Plus, Minus, Trash2, CheckCircle, Loader2, Search, Package, ArrowRight, Printer } from 'lucide-react';
+import { ShoppingCart, Plus, Minus, Trash2, CheckCircle, Loader2, Search, Package, ArrowRight, Printer, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { generateInvoicePDF } from '../utils/InvoiceGenerator';
 
 export const POS = () => {
   const { t } = useLanguage();
@@ -12,7 +13,7 @@ export const POS = () => {
   const [loading, setLoading] = useState(true);
   const [checkingOut, setCheckingOut] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [success, setSuccess] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [lastOrder, setLastOrder] = useState<{ items: CartItem[], total: number } | null>(null);
 
   const fetchItems = async () => {
@@ -94,11 +95,11 @@ export const POS = () => {
 
       if (financeError) throw financeError;
 
-      setLastOrder({ items: [...cart], total });
+      const orderDetails = { items: [...cart], total };
+      setLastOrder(orderDetails);
       setCart([]);
-      setSuccess(true);
+      setShowSuccessModal(true);
       fetchItems();
-      setTimeout(() => setSuccess(false), 5000);
     } catch (err: any) {
       alert(err.message);
     } finally {
@@ -106,79 +107,18 @@ export const POS = () => {
     }
   };
 
-  const printInvoice = () => {
+  const handlePrintPDF = () => {
     if (!lastOrder) return;
     
-    const shopSettings = JSON.parse(localStorage.getItem('shopSettings') || '{}');
-    const logo = localStorage.getItem('shopLogo');
+    const settings = {
+      name: localStorage.getItem('shop_name') || 'My Shop',
+      address: localStorage.getItem('shop_address') || '',
+      phone: localStorage.getItem('shop_phone') || '',
+      email: localStorage.getItem('shop_email') || ''
+    };
+    const logo = localStorage.getItem('shop_logo');
 
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) return;
-
-    const html = `
-      <html>
-        <head>
-          <title>Invoice</title>
-          <style>
-            body { font-family: sans-serif; padding: 40px; color: #333; }
-            .header { text-align: center; margin-bottom: 40px; }
-            .logo { max-width: 100px; margin-bottom: 10px; }
-            .shop-name { font-size: 24px; font-weight: bold; margin-bottom: 5px; }
-            .shop-info { font-size: 14px; color: #666; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            th { text-align: left; border-bottom: 2px solid #eee; padding: 10px; }
-            td { padding: 10px; border-bottom: 1px solid #eee; }
-            .total { text-align: right; font-size: 20px; font-weight: bold; margin-top: 20px; }
-            .footer { text-align: center; margin-top: 40px; font-size: 12px; color: #999; }
-            @media print { .no-print { display: none; } }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            ${logo ? `<img src="${logo}" class="logo" />` : ''}
-            <div class="shop-name">${shopSettings.name || 'My Shop'}</div>
-            <div class="shop-info">
-              ${shopSettings.address || ''}<br>
-              ${shopSettings.phone || ''}<br>
-              ${shopSettings.email || ''}
-            </div>
-          </div>
-          <h3>Invoice</h3>
-          <p>Date: ${new Date().toLocaleString()}</p>
-          <table>
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th>Qty</th>
-                <th>Price</th>
-                <th>Subtotal</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${lastOrder.items.map(item => `
-                <tr>
-                  <td>${item.item_name}</td>
-                  <td>${item.quantity}</td>
-                  <td>$${item.price.toFixed(2)}</td>
-                  <td>$${(item.price * item.quantity).toFixed(2)}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-          <div class="total">Total: $${lastOrder.total.toFixed(2)}</div>
-          <div class="footer">Thank you for your business!</div>
-          <script>
-            window.onload = () => {
-              window.print();
-              window.onafterprint = () => window.close();
-            };
-          </script>
-        </body>
-      </html>
-    `;
-
-    printWindow.document.write(html);
-    printWindow.document.close();
+    generateInvoicePDF(lastOrder.items, lastOrder.total, settings, logo);
   };
 
   const filteredItems = items.filter(item => 
@@ -186,153 +126,139 @@ export const POS = () => {
   );
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-[calc(100vh-12rem)] animate-in fade-in duration-500">
-      {/* Product Selection */}
-      <div className="lg:col-span-8 flex flex-col gap-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-3xl font-bold text-white tracking-tight">{t('pos')}</h2>
-            <p className="text-slate-400">Select products to add to cart</p>
+    <div className="relative h-[calc(100vh-12rem)]">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full animate-in fade-in duration-500">
+        {/* Product Selection */}
+        <div className="lg:col-span-8 flex flex-col gap-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-3xl font-bold dark:text-white text-slate-900 tracking-tight">{t('pos')}</h2>
+              <p className="text-slate-400">Select products to add to cart</p>
+            </div>
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+              <input 
+                type="text" 
+                placeholder="Search products..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full md:w-80 bg-white dark:bg-[#151921] border border-slate-200 dark:border-slate-800/50 rounded-2xl pl-12 pr-4 py-3 dark:text-white text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-xl transition-all"
+              />
+            </div>
           </div>
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-            <input 
-              type="text" 
-              placeholder="Search products..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full md:w-80 bg-[#151921] border border-slate-800/50 rounded-2xl pl-12 pr-4 py-3 text-white outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-xl transition-all"
-            />
-          </div>
-        </div>
 
-        <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
-          {loading ? (
-            <div className="flex items-center justify-center h-full">
-              <Loader2 className="w-12 h-12 animate-spin text-indigo-500" />
-            </div>
-          ) : filteredItems.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-slate-500 gap-6">
-              <Package className="w-20 h-20 opacity-10" />
-              <p className="text-2xl font-bold">No products available</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredItems.map((item) => (
-                <motion.button
-                  whileHover={{ y: -6 }}
-                  whileTap={{ scale: 0.96 }}
-                  key={item.id}
-                  onClick={() => addToCart(item)}
-                  className="bg-[#151921] p-5 rounded-[32px] border border-slate-800/50 shadow-xl hover:border-indigo-500/50 transition-all text-left flex flex-col gap-4 group"
-                >
-                  <div className="w-full aspect-square bg-[#0B0E14] rounded-2xl flex items-center justify-center text-slate-500 group-hover:text-indigo-400 transition-colors">
-                    <Package className="w-12 h-12" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-white text-lg line-clamp-1">{item.item_name}</h4>
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="text-indigo-400 font-black text-lg">${item.price.toFixed(2)}</span>
-                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{item.stock} in stock</span>
-                    </div>
-                  </div>
-                </motion.button>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Cart & Checkout */}
-      <div className="lg:col-span-4 flex flex-col">
-        <div className="bg-[#151921] rounded-[32px] border border-slate-800/50 shadow-2xl flex flex-col h-full overflow-hidden">
-          <div className="p-8 border-b border-slate-800/50 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-600/20">
-                <ShoppingCart className="w-6 h-6" />
+          <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+            {loading ? (
+              <div className="flex items-center justify-center h-full">
+                <Loader2 className="w-12 h-12 animate-spin text-indigo-500" />
               </div>
-              <h3 className="text-2xl font-bold text-white">Cart</h3>
-            </div>
-            <span className="bg-[#0B0E14] text-indigo-400 px-4 py-1.5 rounded-full text-xs font-bold border border-indigo-500/20">{cart.length} items</span>
-          </div>
-
-          <div className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar">
-            <AnimatePresence mode="popLayout">
-              {cart.length === 0 ? (
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="flex flex-col items-center justify-center h-full text-slate-600 gap-6 py-12"
-                >
-                  <ShoppingCart className="w-16 h-16 opacity-10" />
-                  <p className="text-xl font-bold">Your cart is empty</p>
-                </motion.div>
-              ) : (
-                cart.map((item) => (
-                  <motion.div 
-                    layout
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    key={item.id}
-                    className="flex items-center gap-5 bg-[#0B0E14] p-5 rounded-2xl group border border-slate-800/30"
-                  >
-                    <div className="flex-1">
-                      <h5 className="font-bold text-white text-lg line-clamp-1">{item.item_name}</h5>
-                      <p className="text-sm font-medium text-slate-500">${item.price.toFixed(2)} each</p>
-                    </div>
-                    <div className="flex items-center gap-3 bg-[#151921] rounded-xl border border-slate-800/50 p-1.5">
-                      <button 
-                        onClick={() => updateQuantity(item.id, -1)}
-                        className="p-1.5 hover:bg-[#1D222B] rounded-lg transition-colors text-slate-400 hover:text-white"
-                      >
-                        <Minus className="w-4 h-4" />
-                      </button>
-                      <span className="w-8 text-center font-black text-white">{item.quantity}</span>
-                      <button 
-                        onClick={() => updateQuantity(item.id, 1)}
-                        className="p-1.5 hover:bg-[#1D222B] rounded-lg transition-colors text-slate-400 hover:text-white"
-                      >
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <button 
-                      onClick={() => removeFromCart(item.id)}
-                      className="p-3 text-slate-600 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                  </motion.div>
-                ))
-              )}
-            </AnimatePresence>
-          </div>
-
-          <div className="p-8 bg-[#0B0E14] border-t border-slate-800/50 space-y-6">
-            <div className="flex items-center justify-between">
-              <span className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Subtotal</span>
-              <span className="text-white font-bold text-lg">${total.toFixed(2)}</span>
-            </div>
-            <div className="flex items-center justify-between text-2xl">
-              <span className="text-white font-black">Total</span>
-              <span className="text-indigo-400 font-black">${total.toFixed(2)}</span>
-            </div>
-            
-            {success ? (
-              <div className="space-y-4">
-                <div className="bg-emerald-500 text-white font-bold py-5 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-emerald-500/20">
-                  <CheckCircle className="w-7 h-7" />
-                  Checkout Successful!
-                </div>
-                <button 
-                  onClick={printInvoice}
-                  className="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-2xl transition-all flex items-center justify-center gap-3"
-                >
-                  <Printer className="w-5 h-5" />
-                  Print Invoice
-                </button>
+            ) : filteredItems.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full text-slate-500 gap-6">
+                <Package className="w-20 h-20 opacity-10" />
+                <p className="text-2xl font-bold">No products available</p>
               </div>
             ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-6">
+                {filteredItems.map((item) => (
+                  <motion.button
+                    whileHover={{ y: -6 }}
+                    whileTap={{ scale: 0.96 }}
+                    key={item.id}
+                    onClick={() => addToCart(item)}
+                    className="bg-white dark:bg-[#151921] p-5 rounded-[32px] border border-slate-200 dark:border-slate-800/50 shadow-xl hover:border-indigo-500/50 transition-all text-left flex flex-col gap-4 group"
+                  >
+                    <div className="w-full aspect-square bg-slate-100 dark:bg-[#0B0E14] rounded-2xl flex items-center justify-center text-slate-500 group-hover:text-indigo-400 transition-colors">
+                      <Package className="w-12 h-12" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold dark:text-white text-slate-900 text-lg line-clamp-1">{item.item_name}</h4>
+                      <div className="flex items-center justify-between mt-2">
+                        <span className="text-indigo-400 font-black text-lg">${item.price.toFixed(2)}</span>
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{item.stock} in stock</span>
+                      </div>
+                    </div>
+                  </motion.button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Cart & Checkout */}
+        <div className="lg:col-span-4 flex flex-col">
+          <div className="bg-white dark:bg-[#151921] rounded-[32px] border border-slate-200 dark:border-slate-800/50 shadow-2xl flex flex-col h-full overflow-hidden">
+            <div className="p-8 border-b border-slate-200 dark:border-slate-800/50 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-600/20">
+                  <ShoppingCart className="w-6 h-6" />
+                </div>
+                <h3 className="text-2xl font-bold dark:text-white text-slate-900">Cart</h3>
+              </div>
+              <span className="bg-slate-100 dark:bg-[#0B0E14] text-indigo-400 px-4 py-1.5 rounded-full text-xs font-bold border border-indigo-500/20">{cart.length} items</span>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar">
+              <AnimatePresence mode="popLayout">
+                {cart.length === 0 ? (
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex flex-col items-center justify-center h-full text-slate-600 gap-6 py-12"
+                  >
+                    <ShoppingCart className="w-16 h-16 opacity-10" />
+                    <p className="text-xl font-bold">Your cart is empty</p>
+                  </motion.div>
+                ) : (
+                  cart.map((item) => (
+                    <motion.div 
+                      layout
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      key={item.id}
+                      className="flex items-center gap-5 bg-slate-50 dark:bg-[#0B0E14] p-5 rounded-2xl group border border-slate-200 dark:border-slate-800/30"
+                    >
+                      <div className="flex-1">
+                        <h5 className="font-bold dark:text-white text-slate-900 text-lg line-clamp-1">{item.item_name}</h5>
+                        <p className="text-sm font-medium text-slate-500">${item.price.toFixed(2)} each</p>
+                      </div>
+                      <div className="flex items-center gap-3 bg-white dark:bg-[#151921] rounded-xl border border-slate-200 dark:border-slate-800/50 p-1.5">
+                        <button 
+                          onClick={() => updateQuantity(item.id, -1)}
+                          className="p-1.5 hover:bg-slate-100 dark:hover:bg-[#1D222B] rounded-lg transition-colors text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                        >
+                          <Minus className="w-4 h-4" />
+                        </button>
+                        <span className="w-8 text-center font-black dark:text-white text-slate-900">{item.quantity}</span>
+                        <button 
+                          onClick={() => updateQuantity(item.id, 1)}
+                          className="p-1.5 hover:bg-slate-100 dark:hover:bg-[#1D222B] rounded-lg transition-colors text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <button 
+                        onClick={() => removeFromCart(item.id)}
+                        className="p-3 text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </motion.div>
+                  ))
+                )}
+              </AnimatePresence>
+            </div>
+
+            <div className="p-8 bg-slate-50 dark:bg-[#0B0E14] border-t border-slate-200 dark:border-slate-800/50 space-y-6">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Subtotal</span>
+                <span className="dark:text-white text-slate-900 font-bold text-lg">${total.toFixed(2)}</span>
+              </div>
+              <div className="flex items-center justify-between text-2xl">
+                <span className="dark:text-white text-slate-900 font-black">Total</span>
+                <span className="text-indigo-400 font-black">${total.toFixed(2)}</span>
+              </div>
+              
               <button 
                 onClick={handleCheckout}
                 disabled={cart.length === 0 || checkingOut}
@@ -345,10 +271,59 @@ export const POS = () => {
                   </>
                 )}
               </button>
-            )}
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Success Modal Overlay */}
+      <AnimatePresence>
+        {showSuccessModal && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="bg-white dark:bg-[#151921] rounded-[40px] p-10 max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-800/50 text-center relative"
+            >
+              <button 
+                onClick={() => setShowSuccessModal(false)}
+                className="absolute top-6 right-6 p-2 text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+
+              <div className="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center text-emerald-500 mx-auto mb-8">
+                <CheckCircle className="w-12 h-12" />
+              </div>
+
+              <h3 className="text-3xl font-black dark:text-white text-slate-900 mb-4">Checkout Successful!</h3>
+              <p className="text-slate-400 mb-10 text-lg">Your transaction has been recorded and stock has been updated.</p>
+
+              <div className="space-y-4">
+                <button 
+                  onClick={handlePrintPDF}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-5 rounded-2xl shadow-lg shadow-indigo-600/20 transition-all flex items-center justify-center gap-3 text-lg"
+                >
+                  <Printer className="w-6 h-6" />
+                  Print PDF Receipt
+                </button>
+                <button 
+                  onClick={() => setShowSuccessModal(false)}
+                  className="w-full bg-slate-100 dark:bg-[#0B0E14] dark:text-slate-400 text-slate-600 font-bold py-5 rounded-2xl transition-all hover:bg-slate-200 dark:hover:bg-[#1D222B]"
+                >
+                  Done
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

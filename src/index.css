@@ -4,7 +4,11 @@
 
 @layer base {
   body {
-    @apply bg-[#0B0E14] text-slate-300 antialiased;
+    @apply bg-slate-50 text-slate-900 antialiased transition-colors duration-300;
+  }
+  
+  .dark body {
+    @apply bg-[#0B0E14] text-slate-300;
   }
 }
 

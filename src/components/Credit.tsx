@@ -97,7 +97,7 @@ export const Credit = () => {
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-white tracking-tight">{t('credit')}</h2>
+          <h2 className="text-3xl font-bold dark:text-white text-slate-900 tracking-tight">{t('credit')}</h2>
           <p className="text-slate-400">Manage customer debts and payments</p>
         </div>
         <div className="relative">
@@ -107,7 +107,7 @@ export const Credit = () => {
             placeholder="Search customers..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full md:w-80 bg-[#151921] border border-slate-800/50 rounded-2xl pl-12 pr-4 py-3 text-white outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-xl transition-all"
+            className="w-full md:w-80 bg-white dark:bg-[#151921] border border-slate-200 dark:border-slate-800/50 rounded-2xl pl-12 pr-4 py-3 dark:text-white text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-xl transition-all"
           />
         </div>
       </div>
@@ -115,12 +115,12 @@ export const Credit = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Add Customer Form */}
         <div className="lg:col-span-1">
-          <div className="bg-[#151921] p-8 rounded-[32px] border border-slate-800/50 shadow-xl sticky top-8">
+          <div className="bg-white dark:bg-[#151921] p-8 rounded-[32px] border border-slate-200 dark:border-slate-800/50 shadow-xl sticky top-8">
             <div className="flex items-center gap-4 mb-8">
               <div className="w-12 h-12 bg-indigo-600/10 rounded-2xl flex items-center justify-center text-indigo-500">
                 <Plus className="w-6 h-6" />
               </div>
-              <h3 className="text-2xl font-bold text-white">Register Customer</h3>
+              <h3 className="text-2xl font-bold dark:text-white text-slate-900">Register Customer</h3>
             </div>
             <form onSubmit={handleAddCustomer} className="space-y-6">
               <div>
@@ -130,7 +130,7 @@ export const Credit = () => {
                   required
                   value={newCustomer.customer_name}
                   onChange={(e) => setNewCustomer(prev => ({ ...prev, customer_name: e.target.value }))}
-                  className="w-full bg-[#0B0E14] border border-slate-800/50 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium"
+                  className="w-full bg-slate-50 dark:bg-[#0B0E14] border border-slate-200 dark:border-slate-800/50 rounded-2xl px-6 py-4 dark:text-white text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium"
                   placeholder="e.g. John Doe"
                 />
               </div>
@@ -141,7 +141,7 @@ export const Credit = () => {
                   step="0.01"
                   value={newCustomer.balance}
                   onChange={(e) => setNewCustomer(prev => ({ ...prev, balance: e.target.value }))}
-                  className="w-full bg-[#0B0E14] border border-slate-800/50 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium"
+                  className="w-full bg-slate-50 dark:bg-[#0B0E14] border border-slate-200 dark:border-slate-800/50 rounded-2xl px-6 py-4 dark:text-white text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium"
                   placeholder="0.00"
                 />
               </div>
@@ -159,8 +159,8 @@ export const Credit = () => {
 
         {/* Customer List */}
         <div className="lg:col-span-2">
-          <div className="bg-[#151921] rounded-[32px] border border-slate-800/50 shadow-xl overflow-hidden">
-            <div className="divide-y divide-slate-800/50">
+          <div className="bg-white dark:bg-[#151921] rounded-[32px] border border-slate-200 dark:border-slate-800/50 shadow-xl overflow-hidden">
+            <div className="divide-y divide-slate-200 dark:divide-slate-800/50">
               {loading ? (
                 <div className="p-20 text-center">
                   <Loader2 className="w-10 h-10 animate-spin text-indigo-500 mx-auto" />
@@ -176,27 +176,27 @@ export const Credit = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     key={customer.id} 
-                    className="p-8 flex flex-col md:flex-row md:items-center justify-between hover:bg-[#1D222B]/30 transition-colors group gap-6"
+                    className="p-8 flex flex-col md:flex-row md:items-center justify-between hover:bg-slate-50 dark:hover:bg-[#1D222B]/30 transition-colors group gap-6"
                   >
                     <div className="flex items-center gap-6">
-                      <div className="w-14 h-14 bg-[#0B0E14] rounded-2xl flex items-center justify-center text-slate-400 group-hover:text-indigo-400 transition-colors">
+                      <div className="w-14 h-14 bg-slate-50 dark:bg-[#0B0E14] rounded-2xl flex items-center justify-center text-slate-400 group-hover:text-indigo-400 transition-colors">
                         <Users className="w-7 h-7" />
                       </div>
                       <div>
-                        <p className="font-bold text-white text-lg">{customer.customer_name}</p>
+                        <p className="font-bold dark:text-white text-slate-900 text-lg">{customer.customer_name}</p>
                         <p className="text-sm font-medium text-slate-500">Balance: <span className={`font-bold ${customer.balance > 0 ? 'text-red-400' : 'text-emerald-400'}`}>${customer.balance.toFixed(2)}</span></p>
                       </div>
                     </div>
                     
                     <div className="flex items-center gap-3">
                       {selectedCustomer?.id === customer.id ? (
-                        <div className="flex items-center gap-3 bg-[#0B0E14] p-2 rounded-2xl border border-slate-800/50 shadow-xl">
+                        <div className="flex items-center gap-3 bg-slate-50 dark:bg-[#0B0E14] p-2 rounded-2xl border border-slate-200 dark:border-slate-800/50 shadow-xl">
                           <input 
                             type="number" 
                             placeholder="Amount"
                             value={updateAmount}
                             onChange={(e) => setUpdateAmount(e.target.value)}
-                            className="w-28 bg-transparent px-4 py-2 outline-none text-white font-bold placeholder:text-slate-700"
+                            className="w-28 bg-transparent px-4 py-2 outline-none dark:text-white text-slate-900 font-bold placeholder:text-slate-400"
                           />
                           <button 
                             onClick={() => handleUpdateBalance('Add Debt')}
@@ -212,7 +212,7 @@ export const Credit = () => {
                           </button>
                           <button 
                             onClick={() => setSelectedCustomer(null)}
-                            className="px-4 py-2 text-slate-500 hover:text-slate-300 text-xs font-bold"
+                            className="px-4 py-2 text-slate-500 hover:text-slate-300 dark:hover:text-slate-100 text-xs font-bold"
                           >
                             Cancel
                           </button>
@@ -221,7 +221,7 @@ export const Credit = () => {
                         <>
                           <button 
                             onClick={() => setSelectedCustomer(customer)}
-                            className="px-6 py-3 bg-[#0B0E14] text-slate-300 rounded-2xl text-sm font-bold hover:bg-indigo-600 hover:text-white transition-all flex items-center gap-2 border border-slate-800/50"
+                            className="px-6 py-3 bg-slate-50 dark:bg-[#0B0E14] text-slate-600 dark:text-slate-300 rounded-2xl text-sm font-bold hover:bg-indigo-600 hover:text-white transition-all flex items-center gap-2 border border-slate-200 dark:border-slate-800/50"
                           >
                             Manage Balance
                             <ChevronRight className="w-4 h-4" />

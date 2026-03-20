@@ -32,25 +32,25 @@ export const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0B0E14] flex items-center justify-center p-4 font-sans transition-colors duration-300">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full bg-white rounded-3xl shadow-xl border border-slate-200 p-8"
+        className="max-w-md w-full bg-white dark:bg-[#151921] rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800/50 p-8"
       >
         <div className="flex flex-col items-center mb-8">
-          <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center text-white mb-4 shadow-lg shadow-indigo-200">
+          <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center text-white mb-4 shadow-lg shadow-indigo-200 dark:shadow-indigo-600/20">
             <Store className="w-10 h-10" />
           </div>
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">DSBH SaaS</h1>
-          <p className="text-slate-500 mt-2 text-center">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">DSBH SaaS</h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-2 text-center">
             {isSignUp ? 'Create your business account' : 'Sign in to your dashboard'}
           </p>
         </div>
 
         <form onSubmit={handleAuth} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1">Email Address</label>
+            <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Email Address</label>
             <div className="relative">
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
               <input 
@@ -58,14 +58,14 @@ export const Auth = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-12 pr-4 py-3.5 outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                className="w-full bg-slate-50 dark:bg-[#0B0E14] border border-slate-200 dark:border-slate-800/50 rounded-2xl pl-12 pr-4 py-3.5 outline-none focus:ring-2 focus:ring-indigo-500 transition-all dark:text-white text-slate-900"
                 placeholder="name@company.com"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1">Password</label>
+            <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Password</label>
             <div className="relative">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
               <input 
@@ -73,14 +73,14 @@ export const Auth = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-12 pr-4 py-3.5 outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                className="w-full bg-slate-50 dark:bg-[#0B0E14] border border-slate-200 dark:border-slate-800/50 rounded-2xl pl-12 pr-4 py-3.5 outline-none focus:ring-2 focus:ring-indigo-500 transition-all dark:text-white text-slate-900"
                 placeholder="••••••••"
               />
             </div>
           </div>
 
           {error && (
-            <div className="p-4 bg-red-50 border border-red-100 text-red-600 rounded-2xl text-sm font-medium">
+            <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 rounded-2xl text-sm font-medium">
               {error}
             </div>
           )}

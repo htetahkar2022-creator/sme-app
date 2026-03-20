@@ -36,7 +36,7 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0B0E14] flex items-center justify-center transition-colors duration-300">
         <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
@@ -46,13 +46,13 @@ function App() {
     // If Supabase is not configured, show an error message instead of the auth form
     if (!isSupabaseConfigured) {
       return (
-        <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 font-sans">
-          <div className="max-w-md w-full bg-white rounded-3xl shadow-xl border border-slate-200 p-8 text-center">
+        <div className="min-h-screen bg-slate-50 dark:bg-[#0B0E14] flex flex-col items-center justify-center p-4 font-sans transition-colors duration-300">
+          <div className="max-w-md w-full bg-white dark:bg-[#151921] rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800/50 p-8 text-center">
             <h1 className="text-2xl font-bold text-red-600 mb-4">Supabase Configuration Error</h1>
-            <p className="text-slate-600 mb-6">The Supabase URL or Anon Key is missing. Please set the `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` environment variables in your settings.</p>
+            <p className="text-slate-600 dark:text-slate-400 mb-6">The Supabase URL or Anon Key is missing. Please set the `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` environment variables in your settings.</p>
             <button 
               onClick={() => window.location.reload()} 
-              className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-2xl shadow-lg shadow-indigo-200 transition-all"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-2xl shadow-lg shadow-indigo-200 dark:shadow-indigo-600/20 transition-all"
             >
               Refresh and Retry
             </button>

@@ -77,7 +77,7 @@ export const Inventory = () => {
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-white tracking-tight">{t('inventory')}</h2>
+          <h2 className="text-3xl font-bold dark:text-white text-slate-900 tracking-tight">{t('inventory')}</h2>
           <p className="text-slate-400">Manage your products and stock levels</p>
         </div>
         <div className="relative">
@@ -87,7 +87,7 @@ export const Inventory = () => {
             placeholder={t('searchProducts')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full md:w-80 bg-[#151921] border border-slate-800/50 rounded-2xl pl-12 pr-4 py-3 text-white outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-xl transition-all"
+            className="w-full md:w-80 bg-white dark:bg-[#151921] border border-slate-200 dark:border-slate-800/50 rounded-2xl pl-12 pr-4 py-3 dark:text-white text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-xl transition-all"
           />
         </div>
       </div>
@@ -95,12 +95,12 @@ export const Inventory = () => {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
         {/* Add Item Form */}
         <div className="xl:col-span-1">
-          <div className="bg-[#151921] p-8 rounded-[32px] border border-slate-800/50 shadow-xl sticky top-8">
+          <div className="bg-white dark:bg-[#151921] p-8 rounded-[32px] border border-slate-200 dark:border-slate-800/50 shadow-xl sticky top-8">
             <div className="flex items-center gap-4 mb-8">
               <div className="w-12 h-12 bg-indigo-600/10 rounded-2xl flex items-center justify-center text-indigo-500">
                 <Plus className="w-6 h-6" />
               </div>
-              <h3 className="text-2xl font-bold text-white">{t('addProduct')}</h3>
+              <h3 className="text-2xl font-bold dark:text-white text-slate-900">{t('addProduct')}</h3>
             </div>
             <form onSubmit={handleAddItem} className="space-y-6">
               <div>
@@ -110,7 +110,7 @@ export const Inventory = () => {
                   required
                   value={newItem.item_name}
                   onChange={(e) => setNewItem(prev => ({ ...prev, item_name: e.target.value }))}
-                  className="w-full bg-[#0B0E14] border border-slate-800/50 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium"
+                  className="w-full bg-slate-50 dark:bg-[#0B0E14] border border-slate-200 dark:border-slate-800/50 rounded-2xl px-6 py-4 dark:text-white text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium"
                   placeholder="e.g. Wireless Mouse"
                 />
               </div>
@@ -123,7 +123,7 @@ export const Inventory = () => {
                     required
                     value={newItem.price}
                     onChange={(e) => setNewItem(prev => ({ ...prev, price: e.target.value }))}
-                    className="w-full bg-[#0B0E14] border border-slate-800/50 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium"
+                    className="w-full bg-slate-50 dark:bg-[#0B0E14] border border-slate-200 dark:border-slate-800/50 rounded-2xl px-6 py-4 dark:text-white text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium"
                     placeholder="29.99"
                   />
                 </div>
@@ -134,7 +134,7 @@ export const Inventory = () => {
                     required
                     value={newItem.stock}
                     onChange={(e) => setNewItem(prev => ({ ...prev, stock: e.target.value }))}
-                    className="w-full bg-[#0B0E14] border border-slate-800/50 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium"
+                    className="w-full bg-slate-50 dark:bg-[#0B0E14] border border-slate-200 dark:border-slate-800/50 rounded-2xl px-6 py-4 dark:text-white text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium"
                     placeholder="100"
                   />
                 </div>
@@ -153,18 +153,18 @@ export const Inventory = () => {
 
         {/* Item List */}
         <div className="xl:col-span-2">
-          <div className="bg-[#151921] rounded-[32px] border border-slate-800/50 shadow-xl overflow-hidden">
+          <div className="bg-white dark:bg-[#151921] rounded-[32px] border border-slate-200 dark:border-slate-800/50 shadow-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-[#1D222B]/50">
+                  <tr className="bg-slate-50 dark:bg-[#1D222B]/50">
                     <th className="px-8 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">{t('inventory')}</th>
                     <th className="px-8 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">{t('price')}</th>
                     <th className="px-8 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">{t('stock')}</th>
                     <th className="px-8 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">{t('actions')}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/50">
+                <tbody className="divide-y divide-slate-200 dark:divide-slate-800/50">
                   {loading ? (
                     <tr>
                       <td colSpan={4} className="px-8 py-20 text-center">
@@ -184,17 +184,17 @@ export const Inventory = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         key={item.id} 
-                        className="hover:bg-[#1D222B]/30 transition-colors group"
+                        className="hover:bg-slate-50 dark:hover:bg-[#1D222B]/30 transition-colors group"
                       >
                         <td className="px-8 py-5">
                           <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-[#0B0E14] rounded-2xl flex items-center justify-center text-slate-400 group-hover:text-indigo-400 transition-colors">
+                            <div className="w-12 h-12 bg-slate-100 dark:bg-[#0B0E14] rounded-2xl flex items-center justify-center text-slate-400 group-hover:text-indigo-400 transition-colors">
                               <Package className="w-6 h-6" />
                             </div>
-                            <span className="font-bold text-white text-lg">{item.item_name}</span>
+                            <span className="font-bold dark:text-white text-slate-900 text-lg">{item.item_name}</span>
                           </div>
                         </td>
-                        <td className="px-8 py-5 font-bold text-slate-300 text-lg">${item.price.toFixed(2)}</td>
+                        <td className="px-8 py-5 font-bold text-slate-600 dark:text-slate-300 text-lg">${item.price.toFixed(2)}</td>
                         <td className="px-8 py-5">
                           <div className="flex items-center gap-3">
                             <span className={`font-bold text-lg ${item.stock <= 5 ? 'text-red-400' : 'text-emerald-400'}`}>{item.stock}</span>
