@@ -24,21 +24,21 @@ export const generateInvoicePDF = async (
 
   // Load Burmese Font
   try {
-    const fontUrl = 'https://raw.githubusercontent.com/googlefonts/pyidaungsu/master/fonts/Pyidaungsu-Regular.ttf';
-    const response = await fetch(fontUrl);
-    const arrayBuffer = await response.arrayBuffer();
+    const fontResponse = await fetch('/fonts/Pyidaungsu.ttf');
+    if (!fontResponse.ok) throw new Error('Failed to fetch font from local path');
+    const arrayBuffer = await fontResponse.arrayBuffer();
     
-    // Convert ArrayBuffer to Base64
-    let binary = '';
+    // Convert ArrayBuffer to Base64 efficiently
     const bytes = new Uint8Array(arrayBuffer);
+    let binary = '';
     const len = bytes.byteLength;
     for (let i = 0; i < len; i++) {
       binary += String.fromCharCode(bytes[i]);
     }
     const base64 = window.btoa(binary);
 
-    doc.addFileToVFS('Pyidaungsu-Regular.ttf', base64);
-    doc.addFont('Pyidaungsu-Regular.ttf', 'Pyidaungsu', 'normal');
+    doc.addFileToVFS('Pyidaungsu.ttf', base64);
+    doc.addFont('Pyidaungsu.ttf', 'Pyidaungsu', 'normal');
     doc.setFont('Pyidaungsu');
   } catch (error) {
     console.error('Error loading Burmese font:', error);

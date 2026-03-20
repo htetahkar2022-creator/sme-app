@@ -12,6 +12,7 @@ export const POS = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [checkingOut, setCheckingOut] = useState(false);
+  const [printing, setPrinting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [lastOrder, setLastOrder] = useState<{ items: CartItem[], total: number } | null>(null);
@@ -108,17 +109,25 @@ export const POS = () => {
   };
 
   const handlePrintPDF = async () => {
-    if (!lastOrder) return;
+    if (!lastOrder || printing) return;
+    setPrinting(true);
     
-    const settings = {
-      name: localStorage.getItem('shop_name') || 'My Shop',
-      address: localStorage.getItem('shop_address') || '',
-      phone: localStorage.getItem('shop_phone') || '',
-      email: localStorage.getItem('shop_email') || ''
-    };
-    const logo = localStorage.getItem('shop_logo');
+    try {
+      const settings = {
+        name: localStorage.getItem('shop_name') || 'My Shop',
+        address: localStorage.getItem('shop_address') || '',
+        phone: localStorage.getItem('shop_phone') || '',
+        email: localStorage.getItem('shop_email') || ''
+      };
+      const logo = localStorage.getItem('shop_logo');
 
-    await generateInvoicePDF(lastOrder.items, lastOrder.total, settings, logo);
+      await generateInvoicePDF(lastOrder.items, lastOrder.total, settings, logo);
+    } catch (err) {
+      console.error('Error generating PDF:', err);
+      alert('Failed to generate PDF. Please try again.');
+    } finally {
+      setPrinting(false);
+    }
   };
 
   const filteredItems = items.filter(item => 
@@ -308,10 +317,11 @@ export const POS = () => {
               <div className="space-y-4">
                 <button 
                   onClick={handlePrintPDF}
-                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-5 rounded-2xl shadow-lg shadow-indigo-600/20 transition-all flex items-center justify-center gap-3 text-lg"
+                  disabled={printing}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-5 rounded-2xl shadow-lg shadow-indigo-600/20 transition-all flex items-center justify-center gap-3 text-lg disabled:opacity-70"
                 >
-                  <Printer className="w-6 h-6" />
-                  Print PDF Receipt
+                  {printing ? <Loader2 className="w-6 h-6 animate-spin" /> : <Printer className="w-6 h-6" />}
+                  {printing ? 'Generating PDF...' : 'Print PDF Receipt'}
                 </button>
                 <button 
                   onClick={() => setShowSuccessModal(false)}
