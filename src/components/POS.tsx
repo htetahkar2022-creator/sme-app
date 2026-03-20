@@ -75,15 +75,12 @@ export const POS = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      // Update stock for each item in the cart
-      for (const item of cart) {
-        const { error } = await supabase
-          .from('inventory')
-          .update({ stock: item.stock - item.quantity })
-          .eq('id', item.id);
+      // Update stock using RPC to avoid CORS PATCH issues and ensure atomicity
+      const { error: rpcError } = await supabase.rpc('handle_checkout', { 
+        items: cart.map(item => ({ id: item.id, quantity: item.quantity })) 
+      });
 
-        if (error) throw error;
-      }
+      if (rpcError) throw rpcError;
 
       // Record as income in finance table
       const { error: financeError } = await supabase
