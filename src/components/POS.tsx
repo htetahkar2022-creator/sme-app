@@ -107,7 +107,7 @@ export const POS = () => {
     }
   };
 
-  const handlePrintPDF = () => {
+  const handlePrintPDF = async () => {
     if (!lastOrder) return;
     
     const settings = {
@@ -118,7 +118,7 @@ export const POS = () => {
     };
     const logo = localStorage.getItem('shop_logo');
 
-    generateInvoicePDF(lastOrder.items, lastOrder.total, settings, logo);
+    await generateInvoicePDF(lastOrder.items, lastOrder.total, settings, logo);
   };
 
   const filteredItems = items.filter(item => 

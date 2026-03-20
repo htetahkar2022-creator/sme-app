@@ -9,7 +9,7 @@ interface ShopSettings {
   email: string;
 }
 
-export const generateInvoicePDF = (
+export const generateInvoicePDF = async (
   items: CartItem[],
   total: number,
   settings: ShopSettings,
@@ -21,6 +21,29 @@ export const generateInvoicePDF = (
     unit: 'mm',
     format: [105, 148]
   });
+
+  // Load Burmese Font
+  try {
+    const fontUrl = 'https://raw.githubusercontent.com/googlefonts/pyidaungsu/master/fonts/Pyidaungsu-Regular.ttf';
+    const response = await fetch(fontUrl);
+    const arrayBuffer = await response.arrayBuffer();
+    
+    // Convert ArrayBuffer to Base64
+    let binary = '';
+    const bytes = new Uint8Array(arrayBuffer);
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    const base64 = window.btoa(binary);
+
+    doc.addFileToVFS('Pyidaungsu-Regular.ttf', base64);
+    doc.addFont('Pyidaungsu-Regular.ttf', 'Pyidaungsu', 'normal');
+    doc.setFont('Pyidaungsu');
+  } catch (error) {
+    console.error('Error loading Burmese font:', error);
+    doc.setFont('helvetica');
+  }
 
   const pageWidth = doc.internal.pageSize.getWidth();
   let currentY = 10;
@@ -37,12 +60,21 @@ export const generateInvoicePDF = (
 
   // Shop Info
   doc.setFontSize(12);
-  doc.setFont('helvetica', 'bold');
+  // Use Pyidaungsu if available, otherwise fallback
+  try {
+    doc.setFont('Pyidaungsu', 'normal');
+  } catch {
+    doc.setFont('helvetica', 'bold');
+  }
   doc.text(settings.name || 'My Shop', pageWidth / 2, currentY, { align: 'center' });
   currentY += 6;
 
   doc.setFontSize(8);
-  doc.setFont('helvetica', 'normal');
+  try {
+    doc.setFont('Pyidaungsu', 'normal');
+  } catch {
+    doc.setFont('helvetica', 'normal');
+  }
   doc.text(settings.address || '', pageWidth / 2, currentY, { align: 'center' });
   currentY += 4;
   doc.text(settings.phone || '', pageWidth / 2, currentY, { align: 'center' });
@@ -57,10 +89,18 @@ export const generateInvoicePDF = (
 
   // Invoice Title & Date
   doc.setFontSize(10);
-  doc.setFont('helvetica', 'bold');
+  try {
+    doc.setFont('Pyidaungsu', 'normal');
+  } catch {
+    doc.setFont('helvetica', 'bold');
+  }
   doc.text('RECEIPT', 10, currentY);
   doc.setFontSize(7);
-  doc.setFont('helvetica', 'normal');
+  try {
+    doc.setFont('Pyidaungsu', 'normal');
+  } catch {
+    doc.setFont('helvetica', 'normal');
+  }
   doc.text(new Date().toLocaleString(), pageWidth - 10, currentY, { align: 'right' });
   currentY += 6;
 
@@ -75,7 +115,11 @@ export const generateInvoicePDF = (
       `$${(item.price * item.quantity).toFixed(2)}`
     ]),
     theme: 'plain',
-    styles: { fontSize: 7, cellPadding: 1 },
+    styles: { 
+      fontSize: 7, 
+      cellPadding: 1,
+      font: doc.getFont().fontName === 'Pyidaungsu' ? 'Pyidaungsu' : 'helvetica'
+    },
     headStyles: { fontStyle: 'bold' },
     margin: { left: 10, right: 10 },
     columnStyles: {
@@ -90,13 +134,21 @@ export const generateInvoicePDF = (
 
   // Footer - Total
   doc.setFontSize(10);
-  doc.setFont('helvetica', 'bold');
+  try {
+    doc.setFont('Pyidaungsu', 'normal');
+  } catch {
+    doc.setFont('helvetica', 'bold');
+  }
   doc.text(`GRAND TOTAL: $${total.toFixed(2)}`, pageWidth - 10, currentY, { align: 'right' });
   currentY += 10;
 
   // Thank you message
   doc.setFontSize(8);
-  doc.setFont('helvetica', 'italic');
+  try {
+    doc.setFont('Pyidaungsu', 'normal');
+  } catch {
+    doc.setFont('helvetica', 'italic');
+  }
   doc.text('Thank you for shopping with us!', pageWidth / 2, currentY, { align: 'center' });
 
   // Open in new tab and trigger print
