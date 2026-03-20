@@ -115,9 +115,9 @@ export const Finance = () => {
         </motion.div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
         {/* Add Record Form */}
-        <div className="lg:col-span-1">
+        <div className="xl:col-span-1">
           <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm sticky top-8">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600">
@@ -180,7 +180,7 @@ export const Finance = () => {
         </div>
 
         {/* Transaction History */}
-        <div className="lg:col-span-2">
+        <div className="xl:col-span-2">
           <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="p-6 border-b border-slate-100 flex items-center gap-3">
               <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-500">
