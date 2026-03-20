@@ -1,5 +1,5 @@
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { CartItem } from '../types';
 
 interface ShopSettings {
@@ -65,7 +65,7 @@ export const generateInvoicePDF = (
   currentY += 6;
 
   // Table
-  (doc as any).autoTable({
+  autoTable(doc, {
     startY: currentY,
     head: [['Item', 'Qty', 'Price', 'Total']],
     body: items.map(item => [
@@ -76,7 +76,7 @@ export const generateInvoicePDF = (
     ]),
     theme: 'plain',
     styles: { fontSize: 7, cellPadding: 1 },
-    headStyles: { fontStyle: 'bold', borderBottom: { lineWidth: 0.1, color: [200, 200, 200] } },
+    headStyles: { fontStyle: 'bold' },
     margin: { left: 10, right: 10 },
     columnStyles: {
       0: { cellWidth: 'auto' },

@@ -62,12 +62,12 @@ export const Credit = () => {
   const handleUpdateBalance = async (type: 'Add Debt' | 'Make Payment') => {
     if (!selectedCustomer || !updateAmount) return;
     const amount = parseFloat(updateAmount);
-    const newBalance = type === 'Add Debt' ? selectedCustomer.balance + amount : selectedCustomer.balance - amount;
+    const amountChange = type === 'Add Debt' ? amount : -amount;
 
-    const { error } = await supabase
-      .from('credit')
-      .update({ balance: newBalance })
-      .eq('id', selectedCustomer.id);
+    const { error } = await supabase.rpc('update_credit_balance', { 
+      customer_id: selectedCustomer.id, 
+      amount_change: amountChange 
+    });
 
     if (error) {
       alert(error.message);
