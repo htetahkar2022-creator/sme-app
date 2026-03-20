@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { InventoryItem, CartItem } from '../types';
-import { ShoppingCart, Plus, Minus, Trash2, CheckCircle, Loader2, Search, Package, ArrowRight } from 'lucide-react';
+import { ShoppingCart, Plus, Minus, Trash2, CheckCircle, Loader2, Search, Package, ArrowRight, Printer } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export const POS = () => {
+  const { t } = useLanguage();
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [checkingOut, setCheckingOut] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [success, setSuccess] = useState(false);
+  const [lastOrder, setLastOrder] = useState<{ items: CartItem[], total: number } | null>(null);
 
   const fetchItems = async () => {
     setLoading(true);
@@ -69,6 +72,9 @@ export const POS = () => {
     setCheckingOut(true);
 
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
       // Update stock for each item in the cart
       for (const item of cart) {
         const { error } = await supabase
@@ -85,20 +91,97 @@ export const POS = () => {
         .insert([{
           type: 'Income',
           amount: total,
-          description: `POS Sale: ${cart.map(i => `${i.item_name} (x${i.quantity})`).join(', ')}`
+          description: `POS Sale: ${cart.map(i => `${i.item_name} (x${i.quantity})`).join(', ')}`,
+          user_id: user.id
         }]);
 
       if (financeError) throw financeError;
 
+      setLastOrder({ items: [...cart], total });
       setCart([]);
       setSuccess(true);
       fetchItems();
-      setTimeout(() => setSuccess(false), 3000);
+      setTimeout(() => setSuccess(false), 5000);
     } catch (err: any) {
       alert(err.message);
     } finally {
       setCheckingOut(false);
     }
+  };
+
+  const printInvoice = () => {
+    if (!lastOrder) return;
+    
+    const shopSettings = JSON.parse(localStorage.getItem('shopSettings') || '{}');
+    const logo = localStorage.getItem('shopLogo');
+
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    const html = `
+      <html>
+        <head>
+          <title>Invoice</title>
+          <style>
+            body { font-family: sans-serif; padding: 40px; color: #333; }
+            .header { text-align: center; margin-bottom: 40px; }
+            .logo { max-width: 100px; margin-bottom: 10px; }
+            .shop-name { font-size: 24px; font-weight: bold; margin-bottom: 5px; }
+            .shop-info { font-size: 14px; color: #666; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th { text-align: left; border-bottom: 2px solid #eee; padding: 10px; }
+            td { padding: 10px; border-bottom: 1px solid #eee; }
+            .total { text-align: right; font-size: 20px; font-weight: bold; margin-top: 20px; }
+            .footer { text-align: center; margin-top: 40px; font-size: 12px; color: #999; }
+            @media print { .no-print { display: none; } }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            ${logo ? `<img src="${logo}" class="logo" />` : ''}
+            <div class="shop-name">${shopSettings.name || 'My Shop'}</div>
+            <div class="shop-info">
+              ${shopSettings.address || ''}<br>
+              ${shopSettings.phone || ''}<br>
+              ${shopSettings.email || ''}
+            </div>
+          </div>
+          <h3>Invoice</h3>
+          <p>Date: ${new Date().toLocaleString()}</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${lastOrder.items.map(item => `
+                <tr>
+                  <td>${item.item_name}</td>
+                  <td>${item.quantity}</td>
+                  <td>$${item.price.toFixed(2)}</td>
+                  <td>$${(item.price * item.quantity).toFixed(2)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          <div class="total">Total: $${lastOrder.total.toFixed(2)}</div>
+          <div class="footer">Thank you for your business!</div>
+          <script>
+            window.onload = () => {
+              window.print();
+              window.onafterprint = () => window.close();
+            };
+          </script>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.write(html);
+    printWindow.document.close();
   };
 
   const filteredItems = items.filter(item => 
@@ -111,7 +194,7 @@ export const POS = () => {
       <div className="lg:col-span-8 flex flex-col gap-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h2 className="text-3xl font-bold text-white tracking-tight">Point of Sale</h2>
+            <h2 className="text-3xl font-bold text-white tracking-tight">{t('pos')}</h2>
             <p className="text-slate-400">Select products to add to cart</p>
           </div>
           <div className="relative">
@@ -239,9 +322,18 @@ export const POS = () => {
             </div>
             
             {success ? (
-              <div className="bg-emerald-500 text-white font-bold py-5 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-emerald-500/20">
-                <CheckCircle className="w-7 h-7" />
-                Checkout Successful!
+              <div className="space-y-4">
+                <div className="bg-emerald-500 text-white font-bold py-5 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-emerald-500/20">
+                  <CheckCircle className="w-7 h-7" />
+                  Checkout Successful!
+                </div>
+                <button 
+                  onClick={printInvoice}
+                  className="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-2xl transition-all flex items-center justify-center gap-3"
+                >
+                  <Printer className="w-5 h-5" />
+                  Print Invoice
+                </button>
               </div>
             ) : (
               <button 

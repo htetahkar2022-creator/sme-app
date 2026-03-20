@@ -3,8 +3,10 @@ import { supabase } from '../lib/supabase';
 import { FinanceRecord } from '../types';
 import { TrendingUp, TrendingDown, Wallet, Plus, Trash2, Loader2, ArrowUpRight, ArrowDownLeft, History } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export const Finance = () => {
+  const { t } = useLanguage();
   const [records, setRecords] = useState<FinanceRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
@@ -29,12 +31,21 @@ export const Finance = () => {
   const handleAddRecord = async (e: React.FormEvent) => {
     e.preventDefault();
     setAdding(true);
+    
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      alert('User not authenticated');
+      setAdding(false);
+      return;
+    }
+
     const { error } = await supabase
       .from('finance')
       .insert([{ 
         type: newRecord.type, 
         amount: parseFloat(newRecord.amount), 
-        description: newRecord.description 
+        description: newRecord.description,
+        user_id: user.id
       }]);
 
     if (error) {
@@ -64,7 +75,7 @@ export const Finance = () => {
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div>
-        <h2 className="text-3xl font-bold text-white tracking-tight">Finance</h2>
+        <h2 className="text-3xl font-bold text-white tracking-tight">{t('finance')}</h2>
         <p className="text-slate-400">Track your income, expenses, and overall balance</p>
       </div>
 
@@ -79,7 +90,7 @@ export const Finance = () => {
             <TrendingUp className="w-8 h-8" />
           </div>
           <div>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Total Income</p>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{t('income')}</p>
             <h4 className="text-3xl font-black text-white">${totalIncome.toFixed(2)}</h4>
           </div>
         </motion.div>
@@ -94,7 +105,7 @@ export const Finance = () => {
             <TrendingDown className="w-8 h-8" />
           </div>
           <div>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Total Expense</p>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{t('expense')}</p>
             <h4 className="text-3xl font-black text-white">${totalExpense.toFixed(2)}</h4>
           </div>
         </motion.div>
@@ -123,7 +134,7 @@ export const Finance = () => {
               <div className="w-12 h-12 bg-indigo-600/10 rounded-2xl flex items-center justify-center text-indigo-500">
                 <Plus className="w-6 h-6" />
               </div>
-              <h3 className="text-2xl font-bold text-white">Add Transaction</h3>
+              <h3 className="text-2xl font-bold text-white">{t('addTransaction')}</h3>
             </div>
             <form onSubmit={handleAddRecord} className="space-y-6">
               <div>
@@ -134,19 +145,19 @@ export const Finance = () => {
                     onClick={() => setNewRecord(prev => ({ ...prev, type: 'Income' }))}
                     className={`py-4 rounded-2xl font-bold text-sm transition-all ${newRecord.type === 'Income' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'bg-[#0B0E14] text-slate-500 hover:bg-[#1D222B]'}`}
                   >
-                    Income
+                    {t('income')}
                   </button>
                   <button 
                     type="button"
                     onClick={() => setNewRecord(prev => ({ ...prev, type: 'Expense' }))}
                     className={`py-4 rounded-2xl font-bold text-sm transition-all ${newRecord.type === 'Expense' ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'bg-[#0B0E14] text-slate-500 hover:bg-[#1D222B]'}`}
                   >
-                    Expense
+                    {t('expense')}
                   </button>
                 </div>
               </div>
               <div>
-                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 ml-1">Amount ($)</label>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 ml-1">{t('amount')}</label>
                 <input 
                   type="number" 
                   step="0.01"
@@ -158,7 +169,7 @@ export const Finance = () => {
                 />
               </div>
               <div>
-                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 ml-1">Description</label>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 ml-1">{t('description')}</label>
                 <textarea 
                   required
                   value={newRecord.description}
@@ -173,7 +184,7 @@ export const Finance = () => {
                 className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-5 rounded-2xl shadow-lg shadow-indigo-600/20 transition-all flex items-center justify-center gap-3 disabled:opacity-70 mt-4"
               >
                 {adding ? <Loader2 className="w-6 h-6 animate-spin" /> : <Plus className="w-6 h-6" />}
-                Save Transaction
+                {t('addTransaction')}
               </button>
             </form>
           </div>
@@ -186,7 +197,7 @@ export const Finance = () => {
               <div className="w-12 h-12 bg-[#0B0E14] rounded-2xl flex items-center justify-center text-slate-400">
                 <History className="w-6 h-6" />
               </div>
-              <h3 className="text-2xl font-bold text-white">Transaction History</h3>
+              <h3 className="text-2xl font-bold text-white">{t('transactionHistory')}</h3>
             </div>
             <div className="divide-y divide-slate-800/50">
               {loading ? (
@@ -195,7 +206,7 @@ export const Finance = () => {
                 </div>
               ) : records.length === 0 ? (
                 <div className="p-20 text-center text-slate-500 font-medium">
-                  No transactions recorded yet
+                  {t('noTransactions')}
                 </div>
               ) : (
                 records.map((record) => (

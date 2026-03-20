@@ -3,8 +3,10 @@ import { supabase } from '../lib/supabase';
 import { CreditRecord } from '../types';
 import { Users, Plus, Trash2, Loader2, CreditCard, ChevronRight, ArrowUpRight, ArrowDownLeft, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export const Credit = () => {
+  const { t } = useLanguage();
   const [customers, setCustomers] = useState<CreditRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
@@ -32,11 +34,20 @@ export const Credit = () => {
   const handleAddCustomer = async (e: React.FormEvent) => {
     e.preventDefault();
     setAdding(true);
+    
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      alert('User not authenticated');
+      setAdding(false);
+      return;
+    }
+
     const { error } = await supabase
       .from('credit')
       .insert([{ 
         customer_name: newCustomer.customer_name, 
-        balance: parseFloat(newCustomer.balance || '0') 
+        balance: parseFloat(newCustomer.balance || '0'),
+        user_id: user.id
       }]);
 
     if (error) {
@@ -86,7 +97,7 @@ export const Credit = () => {
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-white tracking-tight">Credit Ledger</h2>
+          <h2 className="text-3xl font-bold text-white tracking-tight">{t('credit')}</h2>
           <p className="text-slate-400">Manage customer debts and payments</p>
         </div>
         <div className="relative">
