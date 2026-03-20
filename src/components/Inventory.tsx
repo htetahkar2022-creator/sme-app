@@ -63,20 +63,20 @@ export const Inventory = () => {
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Inventory</h2>
-          <p className="text-slate-500">Manage your products and stock levels</p>
+          <h2 className="text-3xl font-bold text-white tracking-tight">Inventory</h2>
+          <p className="text-slate-400">Manage your products and stock levels</p>
         </div>
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
           <input 
             type="text" 
             placeholder="Search products..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full md:w-80 bg-white border border-slate-200 rounded-2xl pl-12 pr-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
+            className="w-full md:w-80 bg-[#151921] border border-slate-800/50 rounded-2xl pl-12 pr-4 py-3 text-white outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-xl transition-all"
           />
         </div>
       </div>
@@ -84,46 +84,46 @@ export const Inventory = () => {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
         {/* Add Item Form */}
         <div className="xl:col-span-1">
-          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm sticky top-8">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600">
+          <div className="bg-[#151921] p-8 rounded-[32px] border border-slate-800/50 shadow-xl sticky top-8">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="w-12 h-12 bg-indigo-600/10 rounded-2xl flex items-center justify-center text-indigo-500">
                 <Plus className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold">Add New Product</h3>
+              <h3 className="text-2xl font-bold text-white">Add Product</h3>
             </div>
-            <form onSubmit={handleAddItem} className="space-y-4">
+            <form onSubmit={handleAddItem} className="space-y-6">
               <div>
-                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1">Product Name</label>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 ml-1">Product Name</label>
                 <input 
                   type="text" 
                   required
                   value={newItem.item_name}
                   onChange={(e) => setNewItem(prev => ({ ...prev, item_name: e.target.value }))}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                  className="w-full bg-[#0B0E14] border border-slate-800/50 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium"
                   placeholder="e.g. Wireless Mouse"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1">Price ($)</label>
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 ml-1">Price ($)</label>
                   <input 
                     type="number" 
                     step="0.01"
                     required
                     value={newItem.price}
                     onChange={(e) => setNewItem(prev => ({ ...prev, price: e.target.value }))}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full bg-[#0B0E14] border border-slate-800/50 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium"
                     placeholder="29.99"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1">Stock</label>
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 ml-1">Stock</label>
                   <input 
                     type="number" 
                     required
                     value={newItem.stock}
                     onChange={(e) => setNewItem(prev => ({ ...prev, stock: e.target.value }))}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full bg-[#0B0E14] border border-slate-800/50 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium"
                     placeholder="100"
                   />
                 </div>
@@ -131,9 +131,9 @@ export const Inventory = () => {
               <button 
                 type="submit" 
                 disabled={adding}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-indigo-200 transition-all flex items-center justify-center gap-2 disabled:opacity-70 mt-4"
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-5 rounded-2xl shadow-lg shadow-indigo-600/20 transition-all flex items-center justify-center gap-3 disabled:opacity-70 mt-4"
               >
-                {adding ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />}
+                {adding ? <Loader2 className="w-6 h-6 animate-spin" /> : <Plus className="w-6 h-6" />}
                 Add Product
               </button>
             </form>
@@ -142,27 +142,27 @@ export const Inventory = () => {
 
         {/* Item List */}
         <div className="xl:col-span-2">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="bg-[#151921] rounded-[32px] border border-slate-800/50 shadow-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-slate-50/50">
-                    <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Product</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Price</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Stock</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Actions</th>
+                  <tr className="bg-[#1D222B]/50">
+                    <th className="px-8 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Product</th>
+                    <th className="px-8 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Price</th>
+                    <th className="px-8 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Stock</th>
+                    <th className="px-8 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-800/50">
                   {loading ? (
                     <tr>
-                      <td colSpan={4} className="px-6 py-12 text-center">
-                        <Loader2 className="w-8 h-8 animate-spin text-indigo-600 mx-auto" />
+                      <td colSpan={4} className="px-8 py-20 text-center">
+                        <Loader2 className="w-10 h-10 animate-spin text-indigo-500 mx-auto" />
                       </td>
                     </tr>
                   ) : filteredItems.length === 0 ? (
                     <tr>
-                      <td colSpan={4} className="px-6 py-12 text-center text-slate-500">
+                      <td colSpan={4} className="px-8 py-20 text-center text-slate-500 font-medium">
                         No products found
                       </td>
                     </tr>
@@ -173,31 +173,31 @@ export const Inventory = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         key={item.id} 
-                        className="hover:bg-slate-50/50 transition-colors group"
+                        className="hover:bg-[#1D222B]/30 transition-colors group"
                       >
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-500">
-                              <Package className="w-5 h-5" />
+                        <td className="px-8 py-5">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-[#0B0E14] rounded-2xl flex items-center justify-center text-slate-400 group-hover:text-indigo-400 transition-colors">
+                              <Package className="w-6 h-6" />
                             </div>
-                            <span className="font-bold text-slate-900">{item.item_name}</span>
+                            <span className="font-bold text-white text-lg">{item.item_name}</span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 font-medium text-slate-600">${item.price.toFixed(2)}</td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-2">
-                            <span className={`font-bold ${item.stock <= 5 ? 'text-red-500' : 'text-slate-900'}`}>{item.stock}</span>
+                        <td className="px-8 py-5 font-bold text-slate-300 text-lg">${item.price.toFixed(2)}</td>
+                        <td className="px-8 py-5">
+                          <div className="flex items-center gap-3">
+                            <span className={`font-bold text-lg ${item.stock <= 5 ? 'text-red-400' : 'text-emerald-400'}`}>{item.stock}</span>
                             {item.stock <= 5 && (
-                              <AlertCircle className="w-4 h-4 text-red-500" />
+                              <AlertCircle className="w-5 h-5 text-red-400" />
                             )}
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-right">
+                        <td className="px-8 py-5 text-right">
                           <button 
                             onClick={() => handleDeleteItem(item.id)}
-                            className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                            className="p-3 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-2xl transition-all"
                           >
-                            <Trash2 className="w-5 h-5" />
+                            <Trash2 className="w-6 h-6" />
                           </button>
                         </td>
                       </motion.tr>

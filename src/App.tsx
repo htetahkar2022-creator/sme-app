@@ -6,11 +6,12 @@ import { Inventory } from './components/Inventory';
 import { POS } from './components/POS';
 import { Finance } from './components/Finance';
 import { Credit } from './components/Credit';
+import { Settings } from './components/Settings';
 import { User } from '@supabase/supabase-js';
 
 function App() {
   const [session, setSession] = useState<User | null>(null);
-  const [activeTab, setActiveTab] = useState('Inventory');
+  const [activeTab, setActiveTab] = useState('Settings');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -72,6 +73,8 @@ function App() {
         return <Finance />;
       case 'Credit':
         return <Credit />;
+      case 'Settings':
+        return <Settings />;
       default:
         return <Inventory />;
     }
