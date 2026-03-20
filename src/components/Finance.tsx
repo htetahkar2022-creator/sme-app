@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { FinanceRecord } from '../types';
-import { TrendingUp, TrendingDown, Wallet, Plus, Trash2, Loader2, ArrowUpRight, ArrowDownLeft, History } from 'lucide-react';
+import { TrendingUp, TrendingDown, Wallet, Plus, Trash2, Loader2, ArrowUpRight, ArrowDownLeft, History, Download } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from '../contexts/LanguageContext';
+import * as XLSX from 'xlsx';
 
 export const Finance = () => {
   const { t } = useLanguage();
@@ -72,11 +73,33 @@ export const Finance = () => {
   const totalExpense = records.filter(r => r.type === 'Expense').reduce((sum, r) => sum + r.amount, 0);
   const netBalance = totalIncome - totalExpense;
 
+  const exportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(records.map(r => ({
+      Type: r.type,
+      Amount: r.amount,
+      Description: r.description,
+      Date: new Date(r.created_at).toLocaleDateString(),
+      Time: new Date(r.created_at).toLocaleTimeString()
+    })));
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Finance History");
+    XLSX.writeFile(workbook, "finance_history.xlsx");
+  };
+
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
-      <div>
-        <h2 className="text-3xl font-bold dark:text-white text-slate-900 tracking-tight">{t('finance')}</h2>
-        <p className="text-slate-400">Track your income, expenses, and overall balance</p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-3xl font-bold dark:text-white text-slate-900 tracking-tight">{t('finance')}</h2>
+          <p className="text-slate-400">Track your income, expenses, and overall balance</p>
+        </div>
+        <button 
+          onClick={exportToExcel}
+          className="flex items-center gap-2 bg-white dark:bg-[#151921] border border-slate-200 dark:border-slate-800/50 px-6 py-3 rounded-2xl font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#1D222B] transition-all shadow-xl"
+        >
+          <Download className="w-5 h-5" />
+          Export to Excel
+        </button>
       </div>
 
       {/* Summary Cards */}

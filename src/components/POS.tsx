@@ -14,6 +14,7 @@ export const POS = () => {
   const [checkingOut, setCheckingOut] = useState(false);
   const [printing, setPrinting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [customerName, setCustomerName] = useState('');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [lastOrder, setLastOrder] = useState<{ items: CartItem[], total: number } | null>(null);
 
@@ -90,7 +91,7 @@ export const POS = () => {
         .insert([{
           type: 'Income',
           amount: total,
-          description: `POS Sale: ${cart.map(i => `${i.item_name} (x${i.quantity})`).join(', ')}`,
+          description: `POS Sale${customerName ? ` (${customerName})` : ''}: ${cart.map(i => `${i.item_name} (x${i.quantity})`).join(', ')}`,
           user_id: user.id
         }]);
 
@@ -99,6 +100,7 @@ export const POS = () => {
       const orderDetails = { items: [...cart], total };
       setLastOrder(orderDetails);
       setCart([]);
+      setCustomerName('');
       setShowSuccessModal(true);
       fetchItems();
     } catch (err: any) {
@@ -259,6 +261,16 @@ export const POS = () => {
             </div>
 
             <div className="p-8 bg-slate-50 dark:bg-[#0B0E14] border-t border-slate-200 dark:border-slate-800/50 space-y-6">
+              <div>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 ml-1">Customer Name (Optional)</label>
+                <input 
+                  type="text" 
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  className="w-full bg-white dark:bg-[#151921] border border-slate-200 dark:border-slate-800/50 rounded-2xl px-6 py-4 dark:text-white text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium"
+                  placeholder="e.g. John Doe"
+                />
+              </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Subtotal</span>
                 <span className="dark:text-white text-slate-900 font-bold text-lg">${total.toFixed(2)}</span>

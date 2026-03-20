@@ -10,7 +10,8 @@ import {
   Menu,
   X,
   Settings as SettingsIcon,
-  Circle
+  Circle,
+  LayoutDashboard
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -25,6 +26,7 @@ export const Layout = ({ children, activeTab, setActiveTab, userEmail }: LayoutP
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
   const navItems = [
+    { id: 'Dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { id: 'Finance', icon: Wallet, label: 'Finance' },
     { id: 'Inventory', icon: Package, label: 'Inventory' },
     { id: 'POS', icon: ShoppingCart, label: 'POS' },

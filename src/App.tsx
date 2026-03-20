@@ -7,11 +7,12 @@ import { POS } from './components/POS';
 import { Finance } from './components/Finance';
 import { Credit } from './components/Credit';
 import { Settings } from './components/Settings';
+import { Dashboard } from './components/Dashboard';
 import { User } from '@supabase/supabase-js';
 
 function App() {
   const [session, setSession] = useState<User | null>(null);
-  const [activeTab, setActiveTab] = useState('Settings');
+  const [activeTab, setActiveTab] = useState('Dashboard');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -65,6 +66,8 @@ function App() {
 
   const renderContent = () => {
     switch (activeTab) {
+      case 'Dashboard':
+        return <Dashboard />;
       case 'Inventory':
         return <Inventory />;
       case 'POS':
@@ -76,7 +79,7 @@ function App() {
       case 'Settings':
         return <Settings />;
       default:
-        return <Inventory />;
+        return <Dashboard />;
     }
   };
 

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { InventoryItem } from '../types';
-import { Plus, Trash2, Package, Loader2, Search, AlertCircle } from 'lucide-react';
+import { Plus, Trash2, Package, Loader2, Search, AlertCircle, Download } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from '../contexts/LanguageContext';
+import * as XLSX from 'xlsx';
 
 export const Inventory = () => {
   const { t } = useLanguage();
@@ -73,6 +74,18 @@ export const Inventory = () => {
     item.item_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const exportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(items.map(i => ({
+      Name: i.item_name,
+      Price: i.price,
+      Stock: i.stock,
+      Date: new Date(i.created_at).toLocaleDateString()
+    })));
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Inventory List");
+    XLSX.writeFile(workbook, "inventory_list.xlsx");
+  };
+
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -80,15 +93,24 @@ export const Inventory = () => {
           <h2 className="text-3xl font-bold dark:text-white text-slate-900 tracking-tight">{t('inventory')}</h2>
           <p className="text-slate-400">Manage your products and stock levels</p>
         </div>
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-          <input 
-            type="text" 
-            placeholder={t('searchProducts')}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full md:w-80 bg-white dark:bg-[#151921] border border-slate-200 dark:border-slate-800/50 rounded-2xl pl-12 pr-4 py-3 dark:text-white text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-xl transition-all"
-          />
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={exportToExcel}
+            className="flex items-center gap-2 bg-white dark:bg-[#151921] border border-slate-200 dark:border-slate-800/50 px-6 py-3 rounded-2xl font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#1D222B] transition-all shadow-xl"
+          >
+            <Download className="w-5 h-5" />
+            Export to Excel
+          </button>
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+            <input 
+              type="text" 
+              placeholder={t('searchProducts')}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full md:w-80 bg-white dark:bg-[#151921] border border-slate-200 dark:border-slate-800/50 rounded-2xl pl-12 pr-4 py-3 dark:text-white text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-xl transition-all"
+            />
+          </div>
         </div>
       </div>
 

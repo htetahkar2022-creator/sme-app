@@ -59,8 +59,7 @@ export const generateInvoicePDF = async (
   }
 
   // Shop Info
-  doc.setFontSize(12);
-  // Use Pyidaungsu if available, otherwise fallback
+  doc.setFontSize(14);
   try {
     doc.setFont('Pyidaungsu', 'normal');
   } catch {
@@ -75,12 +74,23 @@ export const generateInvoicePDF = async (
   } catch {
     doc.setFont('helvetica', 'normal');
   }
-  doc.text(settings.address || '', pageWidth / 2, currentY, { align: 'center' });
-  currentY += 4;
-  doc.text(settings.phone || '', pageWidth / 2, currentY, { align: 'center' });
-  currentY += 4;
-  doc.text(settings.email || '', pageWidth / 2, currentY, { align: 'center' });
-  currentY += 8;
+  
+  if (settings.address) {
+    const splitAddress = doc.splitTextToSize(settings.address, pageWidth - 20);
+    doc.text(splitAddress, pageWidth / 2, currentY, { align: 'center' });
+    currentY += (splitAddress.length * 4);
+  }
+  
+  if (settings.phone) {
+    doc.text(`Tel: ${settings.phone}`, pageWidth / 2, currentY, { align: 'center' });
+    currentY += 4;
+  }
+  
+  if (settings.email) {
+    doc.text(`Email: ${settings.email}`, pageWidth / 2, currentY, { align: 'center' });
+    currentY += 4;
+  }
+  currentY += 2;
 
   // Divider
   doc.setDrawColor(200);
