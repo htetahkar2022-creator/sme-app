@@ -1,5 +1,6 @@
 {
-  "name": "Dr. Science Business Hub (DSBH)",
-  "description": "Professional SME management tool with Finance tracking, Inventory management, Dynamic POS with stock deduction, Credit Ledger, and thermal voucher printing. Supports English and Burmese.",
-  "requestFramePermissions": []
+  "name": "Rent Myanmar",
+  "description": "Premium rent-only real estate marketplace for Myanmar, focusing on clean design and property discovery.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
